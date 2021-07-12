@@ -1,0 +1,31 @@
+.grid {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  outline: none;
+  /* max-width: 80vw;
+  max-height: 80vh;
+  overflow: scroll; */
+}
+
+.row {
+  display: flex;
+}
+
+.square {
+  height: 64px;
+  width: 64px;
+  border: 1px solid black;
+}
+
+.square--white {
+  background-color: white;
+}
+
+.square--black {
+  background-color: black;
+}
+
+.square--yellow {
+  background-color: yellow;
+}
