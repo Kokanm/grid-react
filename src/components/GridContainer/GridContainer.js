@@ -7,29 +7,60 @@ import GridForm, {
 import MoveList from "../MoveList/MoveList";
 import "./GridContainer.css";
 
-function GridContainer() {
-  const [gridSize, setGridSize] = React.useState(DEFAULT_GRID_SIZE);
-  const [moveLimit, setMoveLimit] = React.useState(DEFAULT_MOVE_LIMIT);
-  const [moveHistory, setMoveHistory] = React.useState([{ row: 0, col: 0 }]);
+const GridContext = React.createContext();
 
-  function updateGrid(size, limit) {
-    setGridSize(size);
-    setMoveLimit(limit);
+const initialState = {
+  gridSize: DEFAULT_GRID_SIZE,
+  moveLimit: DEFAULT_MOVE_LIMIT,
+  moveHistory: [{ row: 0, col: 0 }],
+  activeCell: { row: 0, col: 0 },
+};
+
+function gridReducer(state = initialState, action) {
+  switch (action.type) {
+    case "MOVE_ACTIVE_CELL": {
+      return {
+        ...state,
+        activeCell: action.activeCell,
+        moveHistory: [...state.moveHistory, action.activeCell],
+      };
+    }
+    case "UPDATE_GRID": {
+      return {
+        ...initialState,
+        gridSize: action.gridSize,
+        moveLimit: action.moveLimit,
+      };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
+}
+
+export function useGridState() {
+  const context = React.useContext(GridContext);
+
+  if (!context) {
+    throw new Error("useAppState must be used within the AppProvider");
   }
 
+  return context;
+}
+
+function GridContainer() {
+  const [state, dispatch] = React.useReducer(gridReducer, { ...initialState });
+
   return (
-    <div className="grid-container">
-      <GridForm updateGrid={updateGrid} />
-      <div className="grid-and-moves">
-        <Grid
-          gridSize={gridSize}
-          moveLimit={moveLimit}
-          moveHistory={moveHistory}
-          setMoveHistory={setMoveHistory}
-        />
-        <MoveList moveHistory={moveHistory} moveLimit={moveLimit} />
+    <GridContext.Provider value={[state, dispatch]}>
+      <div className="grid-container">
+        <GridForm />
+        <div className="grid-and-moves">
+          <Grid />
+          <MoveList />
+        </div>
       </div>
-    </div>
+    </GridContext.Provider>
   );
 }
 

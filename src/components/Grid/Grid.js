@@ -1,5 +1,5 @@
 import * as React from "react";
-import PropTypes from "prop-types";
+import { useGridState } from "../GridContainer/GridContainer";
 import "./Grid.css";
 
 function useKeyDownListener(handler) {
@@ -21,16 +21,14 @@ function useKeyDownListener(handler) {
   }, []);
 }
 
-function Grid({ gridSize, moveLimit, moveHistory, setMoveHistory }) {
-  const [activeCell, setActiveCell] = React.useState({ row: 0, col: 0 });
+function Grid() {
+  const [{ gridSize, moveLimit, moveHistory, activeCell }, dispatch] =
+    useGridState();
   const [focused, setFocused] = React.useState(true);
 
   React.useEffect(() => {
-    // Resets the state if the grid has been updated
-    setActiveCell({ row: 0, col: 0 });
     setFocused(true);
-    setMoveHistory([]);
-  }, [gridSize, moveLimit, setMoveHistory]);
+  }, [gridSize, moveLimit]);
 
   useKeyDownListener(handleMoveActiveCell);
 
@@ -64,8 +62,7 @@ function Grid({ gridSize, moveLimit, moveHistory, setMoveHistory }) {
       return;
     }
 
-    setMoveHistory((prevMoves) => [...prevMoves, { row, col }]);
-    setActiveCell({ row, col });
+    dispatch({ type: "MOVE_ACTIVE_CELL", activeCell: { row, col } });
   }
 
   function getCellColorClass(rowIdx, colIdx) {
@@ -110,15 +107,5 @@ function Grid({ gridSize, moveLimit, moveHistory, setMoveHistory }) {
     </div>
   );
 }
-
-Grid.propTypes = {
-  gridSize: PropTypes.number.isRequired,
-  moveLimit: PropTypes.number.isRequired,
-  moveHistory: PropTypes.exact({
-    row: PropTypes.number,
-    col: PropTypes.number,
-  }).isRequired,
-  setMoveHistory: PropTypes.func.isRequired,
-};
 
 export default Grid;

@@ -1,7 +1,9 @@
-import PropTypes from "prop-types";
+import { useGridState } from "../GridContainer/GridContainer";
 import "./MoveList.css";
 
-function MoveList({ moveHistory, moveLimit }) {
+function MoveList() {
+  const [{ moveHistory, moveLimit }] = useGridState();
+
   return (
     <div className="move-table--container">
       <table className="move-table">
@@ -13,8 +15,8 @@ function MoveList({ moveHistory, moveLimit }) {
         </thead>
         {moveLimit === moveHistory.length && (
           <tbody>
-            {moveHistory.map(({ row, col }) => (
-              <tr>
+            {moveHistory.map(({ row, col }, id) => (
+              <tr key={id}>
                 <td className="move-table--cell">{row}</td>
                 <td className="move-table--cell">{col}</td>
               </tr>
@@ -25,13 +27,5 @@ function MoveList({ moveHistory, moveLimit }) {
     </div>
   );
 }
-
-MoveList.propTypes = {
-  moveLimit: PropTypes.number,
-  moveHistory: PropTypes.exact({
-    row: PropTypes.number,
-    col: PropTypes.number,
-  }).isRequired,
-};
 
 export default MoveList;

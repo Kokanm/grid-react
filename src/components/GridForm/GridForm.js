@@ -1,15 +1,18 @@
+import { useGridState } from "../GridContainer/GridContainer";
 import "./GridForm.css";
 
 export const DEFAULT_GRID_SIZE = 10;
 export const DEFAULT_MOVE_LIMIT = 10;
 
-function GridForm({ updateGrid }) {
+function GridForm() {
+  const [, dispatch] = useGridState();
+
   function handleSubmit(e) {
     e.preventDefault();
 
     const gridSize = Number(e.target.gridSize.value);
     const moveLimit = Number(e.target.moveLimit.value);
-    updateGrid(gridSize, moveLimit);
+    dispatch({ type: "UPDATE_GRID", gridSize, moveLimit });
   }
 
   return (
@@ -19,6 +22,7 @@ function GridForm({ updateGrid }) {
         <input
           id="gridSize"
           type="number"
+          className="grid-form-input-field"
           min={1}
           max={100}
           defaultValue={DEFAULT_GRID_SIZE}
@@ -30,8 +34,8 @@ function GridForm({ updateGrid }) {
         <input
           id="moveLimit"
           type="number"
+          className="grid-form-input-field"
           min={1}
-          max={100}
           defaultValue={DEFAULT_MOVE_LIMIT}
           placeholder={0}
         />

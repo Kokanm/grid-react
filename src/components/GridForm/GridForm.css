@@ -8,3 +8,8 @@
 .grid-form-input {
   padding-right: 20px;
 }
+
+.grid-form-input-field {
+  width: 60px;
+  margin-left: 5px;
+}
