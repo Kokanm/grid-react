@@ -22,15 +22,17 @@ function useKeyDownListener(handler) {
 }
 
 function Grid() {
-  const [{ gridSize, moveLimit, moveHistory, activeCell }, dispatch] =
+  const [{ gridSize, moveLimit, moveHistory, activeCell, focused }, dispatch] =
     useGridState();
-  const [focused, setFocused] = React.useState(true);
-
-  React.useEffect(() => {
-    setFocused(true);
-  }, [gridSize, moveLimit]);
+  const gridDivRef = React.useRef(null);
 
   useKeyDownListener(handleMoveActiveCell);
+
+  React.useEffect(() => {
+    if (document.activeElement !== gridDivRef.current && focused === true) {
+      gridDivRef.current.focus();
+    }
+  }, [focused]);
 
   function handleMoveActiveCell({ key }) {
     let { row, col } = activeCell;
@@ -80,17 +82,18 @@ function Grid() {
   }
 
   function handleGridFocus() {
-    setFocused(true);
+    dispatch({ type: "FOCUS_GRID", focused: true });
   }
 
   function handleGridBlur() {
-    setFocused(false);
+    dispatch({ type: "FOCUS_GRID", focused: false });
   }
 
   return (
     <div
       className="grid"
-      tabIndex="0"
+      tabIndex="-1"
+      ref={gridDivRef}
       onFocus={handleGridFocus}
       onBlur={handleGridBlur}
     >

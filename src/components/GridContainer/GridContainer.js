@@ -14,6 +14,7 @@ const initialState = {
   moveLimit: DEFAULT_MOVE_LIMIT,
   moveHistory: [{ row: 0, col: 0 }],
   activeCell: { row: 0, col: 0 },
+  focused: true,
 };
 
 function gridReducer(state = initialState, action) {
@@ -26,10 +27,17 @@ function gridReducer(state = initialState, action) {
       };
     }
     case "UPDATE_GRID": {
+      // If the grid size or move limit is updated we start the 'game' from the beginning
       return {
         ...initialState,
         gridSize: action.gridSize,
         moveLimit: action.moveLimit,
+      };
+    }
+    case "FOCUS_GRID": {
+      return {
+        ...state,
+        focused: action.focused,
       };
     }
     default: {
