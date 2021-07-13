@@ -1,0 +1,10 @@
+.grid-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+}
+
+.grid-form-input {
+  padding-right: 20px;
+}

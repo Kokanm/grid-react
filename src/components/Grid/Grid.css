@@ -1,31 +1,30 @@
 .grid {
   display: flex;
-  align-items: center;
   flex-direction: column;
   outline: none;
-  /* max-width: 80vw;
-  max-height: 80vh;
-  overflow: scroll; */
+  max-width: calc(80vw - 160px);
+  max-height: 75vh;
+  overflow: auto;
 }
 
 .row {
   display: flex;
 }
 
-.square {
-  height: 64px;
-  width: 64px;
-  border: 1px solid black;
+.cell {
+  min-height: 64px;
+  min-width: 64px;
+  border: 1px solid #000;
 }
 
-.square--white {
-  background-color: white;
+.cell--white {
+  background-color: #fff;
 }
 
-.square--black {
-  background-color: black;
+.cell--black {
+  background-color: #000;
 }
 
-.square--yellow {
-  background-color: yellow;
+.cell--active {
+  background-color: #ff0;
 }

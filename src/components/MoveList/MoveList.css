@@ -1,0 +1,30 @@
+.move-table--container {
+  overflow: auto;
+  height: 75vh;
+  width: 160px;
+  padding-left: 20px;
+}
+
+.move-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-right: 1px solid #000;
+}
+
+.move-table--head {
+  border-bottom: 1px solid #000;
+}
+
+.move-table--header-cell {
+  background-color: #eee;
+  box-shadow: inset 1px 1px #000, 0 1px #000;
+  padding: 8px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.move-table--cell {
+  padding: 8px 16px;
+  box-shadow: inset 1px -1px #000;
+}

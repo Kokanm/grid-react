@@ -1,13 +1,12 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import "./Grid.css";
 
 function useKeyDownListener(handler) {
   const handlerRef = React.useRef();
 
-  // Update ref.current value if handler changes.
-  // This allows our effect below to always get latest handler ...
-  // ... without us needing to pass it in effect deps array ...
-  // ... and potentially cause effect to re-run every render.
+  // This way we avoid passing the handler to the 'listener' useEffect deps array,
+  // this ensures that we don't create duplicate event listeners.
   React.useEffect(() => {
     handlerRef.current = handler;
   }, [handler]);
@@ -22,22 +21,25 @@ function useKeyDownListener(handler) {
   }, []);
 }
 
-function Grid({ gridSize, moveLimit }) {
-  const [activeSquare, setActiveSquare] = React.useState({ row: 0, col: 0 });
-  const [movesHistory, setMovesHistory] = React.useState([{ row: 0, col: 0 }]);
+function Grid({ gridSize, moveLimit, moveHistory, setMoveHistory }) {
+  const [activeCell, setActiveCell] = React.useState({ row: 0, col: 0 });
   const [focused, setFocused] = React.useState(true);
 
   React.useEffect(() => {
-    setActiveSquare({ row: 0, col: 0 });
+    // Resets the state if the grid has been updated
+    setActiveCell({ row: 0, col: 0 });
     setFocused(true);
-  }, [gridSize, moveLimit]);
+    setMoveHistory([]);
+  }, [gridSize, moveLimit, setMoveHistory]);
 
-  useKeyDownListener(handleMoveActiveSquare);
+  useKeyDownListener(handleMoveActiveCell);
 
-  function handleMoveActiveSquare({ key }) {
-    let { row, col } = activeSquare;
+  function handleMoveActiveCell({ key }) {
+    let { row, col } = activeCell;
 
-    if (!focused || movesHistory.length >= moveLimit) {
+    // We shouldn't be able to move through the grid if we used up our move limit
+    // or if the grid is not focused.
+    if (!focused || moveHistory.length >= moveLimit) {
       return;
     }
 
@@ -62,22 +64,22 @@ function Grid({ gridSize, moveLimit }) {
       return;
     }
 
-    setMovesHistory((prevMoves) => [...prevMoves, { row, col }]);
-    setActiveSquare({ row, col });
+    setMoveHistory((prevMoves) => [...prevMoves, { row, col }]);
+    setActiveCell({ row, col });
   }
 
-  function getSquareColorClass(rowIdx, colIdx) {
+  function getCellColorClass(rowIdx, colIdx) {
     let color = "";
 
-    if (activeSquare.row === rowIdx && activeSquare.col === colIdx) {
-      color = "yellow";
+    if (activeCell.row === rowIdx && activeCell.col === colIdx) {
+      color = "active";
     } else if ((rowIdx + colIdx) % 2 === 0) {
       color = "white";
     } else {
       color = "black";
     }
 
-    return `square--${color}`;
+    return `cell--${color}`;
   }
 
   function handleGridFocus() {
@@ -89,29 +91,34 @@ function Grid({ gridSize, moveLimit }) {
   }
 
   return (
-    <React.Fragment>
-      {movesHistory.length === moveLimit && (
-        <div>{JSON.stringify(movesHistory)}</div>
-      )}
-      <div
-        className="grid"
-        tabIndex="0"
-        onFocus={handleGridFocus}
-        onBlur={handleGridBlur}
-      >
-        {Array.from({ length: gridSize }).map((row, rowIdx) => (
-          <div className="row" key={rowIdx}>
-            {Array.from({ length: gridSize }).map((col, colIdx) => (
-              <div
-                key={colIdx}
-                className={`square ${getSquareColorClass(rowIdx, colIdx)}`}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-    </React.Fragment>
+    <div
+      className="grid"
+      tabIndex="0"
+      onFocus={handleGridFocus}
+      onBlur={handleGridBlur}
+    >
+      {Array.from({ length: gridSize }).map((row, rowIdx) => (
+        <div className="row" key={rowIdx}>
+          {Array.from({ length: gridSize }).map((col, colIdx) => (
+            <div
+              key={colIdx}
+              className={`cell ${getCellColorClass(rowIdx, colIdx)}`}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }
+
+Grid.propTypes = {
+  gridSize: PropTypes.number.isRequired,
+  moveLimit: PropTypes.number.isRequired,
+  moveHistory: PropTypes.exact({
+    row: PropTypes.number,
+    col: PropTypes.number,
+  }).isRequired,
+  setMoveHistory: PropTypes.func.isRequired,
+};
 
 export default Grid;
